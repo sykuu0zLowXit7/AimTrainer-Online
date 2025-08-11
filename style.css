@@ -57,7 +57,7 @@ h1.game-title {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: -30px; /* Para acercarlo al título */
+    margin-top: -30px;
     margin-bottom: 40px;
 }
 
