@@ -4,50 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AimTrainer Online</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        iframe {
+            border: 2px solid #555;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+        }
+    </style>
 </head>
 <body>
 
-    <main id="gameContainer">
-        <div id="menuScreen">
-            <h1 class="game-title">AimTrainer Online</h1>
-            
-            <div class="social-links-container">
-                <div class="social-link">
-                    <span class="discord-logo"></span>
-                    <p>Discord: sykuu0</p>
-                </div>
-            </div>
-
-            <div class="menu-grid">
-                <div class="menu-box difficulty-box">
-                    <h2>Dificultad</h2>
-                    <p>Fácil</p>
-                    <p>Medio</p>
-                    <p>Difícil</p>
-                </div>
-                <div class="menu-box mode-box">
-                    <h2>Modo de juego</h2>
-                    <p>Clásico</p>
-                    <p>Velocidad</p>
-                </div>
-                <div class="menu-box start-box" id="startButton">
-                    <h2>JUGAR</h2>
-                </div>
-            </div>
-
-            <p class="credits">Créditos por ZLow / Sykuu</p>
-        </div>
-
-        <canvas id="gameCanvas"></canvas>
-
-        <div class="volume-container">
-            <label for="volumeSlider">Volumen:</label>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
-        </div>
-
-    </main>
+    <h1>AimTrainer Online</h1>
     
-    <script src="script.js"></script>
+    <iframe src="https://sykuu0zlowxit7.github.io/AimTrainer-Online/" 
+            frameborder="0" 
+            width="1000" 
+            height="600" 
+            scrolling="no" 
+            allowfullscreen></iframe>
+
 </body>
 </html>
