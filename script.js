@@ -4,6 +4,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const menuScreen = document.getElementById('menuScreen');
 const startButton = document.getElementById('startButton');
+const autoAimButton = document.getElementById('autoAimButton');
 const volumeSlider = document.getElementById('volumeSlider');
 
 // 2. Variables del juego
@@ -20,6 +21,7 @@ const particleCount = 20;
 
 // Variables de estado y tiempo
 let gameState = 'menu';
+let autoAimEnabled = false;
 let startTime = 0;
 let finalTime = 0;
 let finalMisses = 0;
@@ -189,6 +191,17 @@ function animate() {
         drawParticles();
         drawTimer();
         
+        // --- NUEVA LÓGICA DE AUTO-APUNTADO ---
+        if (autoAimEnabled && target) {
+            // Dibuja una mira que se mueve al objetivo
+            ctx.beginPath();
+            ctx.arc(target.x, target.y, target.radius + 10, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+        // --- FIN DE LA NUEVA LÓGICA ---
+
         ctx.fillStyle = 'white';
         ctx.font = '24px sans-serif';
         ctx.textAlign = 'center';
@@ -218,9 +231,17 @@ function startGame() {
     startTime = Date.now();
     target = createTarget(); 
     
+    // Detiene la música del menú y comienza la del juego
     menuMusic.pause();
     backgroundMusic.currentTime = 0;
     backgroundMusic.play();
+}
+
+// Función para alternar el estado de auto-apuntado y actualizar el botón
+function toggleAutoAim() {
+    autoAimEnabled = !autoAimEnabled; // Alternar el estado
+    autoAimButton.style.backgroundColor = autoAimEnabled ? '#00c853' : '#f7a303'; // Cambiar el color
+    autoAimButton.querySelector('h2').innerText = autoAimEnabled ? 'AUTO APUNTADO: ON' : 'AUTO APUNTADO';
 }
 
 // Manejar los clics del mouse
@@ -267,13 +288,28 @@ volumeSlider.addEventListener('input', (event) => {
     menuMusic.volume = event.target.value;
 });
 
-// Manejar los clics en los botones del menú
-startButton.addEventListener('click', startGame);
+// Event listener para el botón "Auto Apuntado"
+autoAimButton.addEventListener('click', toggleAutoAim);
 
-// 4. --- INICIO DEL JUEGO ---
-// Iniciar el bucle de animación y el ajuste de tamaño
+// Event listener para el botón "Jugar"
+startButton.addEventListener('click', () => {
+    menuMusic.play(); 
+    startGame();
+});
+
+// NUEVO: Event listener para la hotkey (tecla 'T')
+document.addEventListener('keydown', (event) => {
+    if (event.key.toLowerCase() === 't') {
+        toggleAutoAim();
+    }
+});
+
+// --- INICIO DEL JUEGO ---
+// Inicia el bucle de animación y el ajuste de tamaño
 resizeCanvas();
 animate();
 
-// Inicia la música del menú automáticamente
-menuMusic.play();
+// Al cargar la página, se inicia la música del menú con la primera interacción del usuario.
+document.addEventListener('click', () => {
+    menuMusic.play();
+}, { once: true });
