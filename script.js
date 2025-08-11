@@ -32,7 +32,6 @@ backgroundMusic.loop = true;
 menuMusic.loop = true;
 backgroundMusic.volume = 0.5;
 menuMusic.volume = 0.5;
-let musicStarted = false; // Variable para controlar la música
 
 // 3. --- DEFINICIÓN DE FUNCIONES ---
 
@@ -219,18 +218,10 @@ function startGame() {
     startTime = Date.now();
     target = createTarget(); 
     
-    // Al iniciar el juego, se detiene la música del menú y comienza la del juego
+    // Detiene la música del menú y comienza la del juego
     menuMusic.pause();
     backgroundMusic.currentTime = 0;
     backgroundMusic.play();
-}
-
-// Función para iniciar la música del menú
-function playMenuMusic() {
-    if (!musicStarted) {
-        menuMusic.play();
-        musicStarted = true;
-    }
 }
 
 // Manejar los clics del mouse
@@ -277,16 +268,14 @@ volumeSlider.addEventListener('input', (event) => {
     menuMusic.volume = event.target.value;
 });
 
-// Inicia la música del menú cuando el usuario hace clic en el botón "Jugar"
-startButton.addEventListener('click', () => {
-    playMenuMusic();
-    startGame();
-});
-
-// 4. --- INICIO DEL JUEGO ---
-// Iniciar el bucle de animación y el ajuste de tamaño
+// --- INICIO DEL JUEGO ---
+// Inicia el bucle de animación y el ajuste de tamaño
 resizeCanvas();
 animate();
 
-// Al cargar la página, se intenta iniciar la música del menú con la primera interacción del usuario.
-document.addEventListener('click', playMenuMusic, { once: true });
+// Event listener para el botón "Jugar"
+startButton.addEventListener('click', () => {
+    // Al hacer clic en "Jugar", se inicia la música del menú y el juego
+    menuMusic.play(); 
+    startGame();
+});
