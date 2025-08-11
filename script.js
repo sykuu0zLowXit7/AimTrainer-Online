@@ -218,7 +218,6 @@ function startGame() {
     startTime = Date.now();
     target = createTarget(); 
     
-    // Detiene la música del menú y comienza la del juego
     menuMusic.pause();
     backgroundMusic.currentTime = 0;
     backgroundMusic.play();
@@ -268,14 +267,13 @@ volumeSlider.addEventListener('input', (event) => {
     menuMusic.volume = event.target.value;
 });
 
-// --- INICIO DEL JUEGO ---
-// Inicia el bucle de animación y el ajuste de tamaño
+// Manejar los clics en los botones del menú
+startButton.addEventListener('click', startGame);
+
+// 4. --- INICIO DEL JUEGO ---
+// Iniciar el bucle de animación y el ajuste de tamaño
 resizeCanvas();
 animate();
 
-// Event listener para el botón "Jugar"
-startButton.addEventListener('click', () => {
-    // Al hacer clic en "Jugar", se inicia la música del menú y el juego
-    menuMusic.play(); 
-    startGame();
-});
+// Inicia la música del menú automáticamente
+menuMusic.play();
