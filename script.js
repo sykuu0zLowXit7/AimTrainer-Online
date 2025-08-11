@@ -4,7 +4,6 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const menuScreen = document.getElementById('menuScreen');
 const startButton = document.getElementById('startButton');
-const autoAimButton = document.getElementById('autoAimButton'); // Variable para el nuevo botón
 const volumeSlider = document.getElementById('volumeSlider');
 
 // 2. Variables del juego
@@ -21,7 +20,6 @@ const particleCount = 20;
 
 // Variables de estado y tiempo
 let gameState = 'menu';
-let autoAimEnabled = false; // Variable para el auto-apuntado
 let startTime = 0;
 let finalTime = 0;
 let finalMisses = 0;
@@ -34,14 +32,13 @@ backgroundMusic.loop = true;
 menuMusic.loop = true;
 backgroundMusic.volume = 0.5;
 menuMusic.volume = 0.5;
-let musicStarted = false; // Bandera para controlar la música del menú
 
 // 3. --- DEFINICIÓN DE FUNCIONES ---
 
 // Ajustar el tamaño del canvas a la ventana
 function resizeCanvas() {
-    canvas.width = gameContainer.clientWidth;
-    canvas.height = gameContainer.clientHeight;
+    canvas.width = gameContainer.clientWidth;
+    canvas.height = gameContainer.clientHeight;
 }
 
 // Efecto de temblor de pantalla (activado por fallos)
@@ -49,270 +46,234 @@ let shakeDuration = 0;
 const shakeIntensity = 5;
 
 function startShake(duration = 100) {
-    shakeDuration = duration;
+    shakeDuration = duration;
 }
 
 function applyShake() {
-    if (shakeDuration > 0) {
-        const dx = (Math.random() - 0.5) * shakeIntensity;
-        const dy = (Math.random() - 0.5) * shakeIntensity;
-        ctx.save();
-        ctx.translate(dx, dy);
-        shakeDuration -= 10;
-    } else {
-        ctx.restore();
-    }
+    if (shakeDuration > 0) {
+        const dx = (Math.random() - 0.5) * shakeIntensity;
+        const dy = (Math.random() - 0.5) * shakeIntensity;
+        ctx.save();
+        ctx.translate(dx, dy);
+        shakeDuration -= 10;
+    } else {
+        ctx.restore();
+    }
 }
 
 // Crear, actualizar y dibujar partículas para el efecto de explosión
 function createParticles(x, y) {
-    particles = [];
-    for (let i = 0; i < particleCount; i++) {
-        const velocity = {
-            x: (Math.random() - 0.5) * 5,
-            y: (Math.random() - 0.5) * 5
-        };
-        particles.push({
-            x: x, y: y, radius: Math.random() * 3, color: '#ffcccc', velocity: velocity
-        });
-    }
+    particles = [];
+    for (let i = 0; i < particleCount; i++) {
+        const velocity = {
+            x: (Math.random() - 0.5) * 5,
+            y: (Math.random() - 0.5) * 5
+        };
+        particles.push({
+            x: x, y: y, radius: Math.random() * 3, color: '#ffcccc', velocity: velocity
+        });
+    }
 }
 
 function updateParticles() {
-    for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.x += p.velocity.x;
-        p.y += p.velocity.y;
-        p.radius -= 0.1;
-        if (p.radius < 0) {
-            particles.splice(i, 1);
-            i--;
-        }
-    }
+    for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.velocity.x;
+        p.y += p.velocity.y;
+        p.radius -= 0.1;
+        if (p.radius < 0) {
+            particles.splice(i, 1);
+            i--;
+        }
+    }
 }
 
 function drawParticles() {
-    particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.fill();
-        ctx.closePath();
-    });
+    particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        ctx.closePath();
+    });
 }
 
 // Función para crear un objetivo
 function createTarget() {
-    const x = Math.random() * (canvas.width - targetRadius * 2) + targetRadius;
-    const y = Math.random() * (canvas.height - targetRadius * 2) + targetRadius;
-    return { x: x, y: y, radius: targetRadius };
+    const x = Math.random() * (canvas.width - targetRadius * 2) + targetRadius;
+    const y = Math.random() * (canvas.height - targetRadius * 2) + targetRadius;
+    return { x: x, y: y, radius: targetRadius };
 }
 
 // Dibujar el único objetivo con un degradado radial
 function drawTarget() {
-    if (!target) return;
-    const gradient = ctx.createRadialGradient(
-        target.x - 10, target.y - 10, 0,
-        target.x, target.y, target.radius
-    );
-    gradient.addColorStop(0, '#ff9999');
-    gradient.addColorStop(1, '#cc0000');
-    ctx.beginPath();
-    ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
-    ctx.fillStyle = gradient;
-    ctx.fill();
-    ctx.closePath();
+    if (!target) return;
+    const gradient = ctx.createRadialGradient(
+        target.x - 10, target.y - 10, 0,
+        target.x, target.y, target.radius
+    );
+    gradient.addColorStop(0, '#ff9999');
+    gradient.addColorStop(1, '#cc0000');
+    ctx.beginPath();
+    ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
+    ctx.fillStyle = gradient;
+    ctx.fill();
+    ctx.closePath();
 }
 
 // Lógica de fin de juego
 function endGame() {
-    const endTime = Date.now();
-    finalTime = (endTime - startTime) / 1000;
-    finalMisses = misses;
-    gameState = 'results';
-    target = null;
-    backgroundMusic.pause();
-    backgroundMusic.currentTime = 0;
-    menuMusic.play();
+    const endTime = Date.now();
+    finalTime = (endTime - startTime) / 1000;
+    finalMisses = misses;
+    gameState = 'results';
+    target = null;
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+    menuMusic.play();
 }
 
 // Dibuja el texto de los resultados directamente en el canvas
 function drawResultsOnCanvas() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('¡Objetivo completado!', canvas.width / 2, canvas.height / 2 - 100);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 48px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('¡Objetivo completado!', canvas.width / 2, canvas.height / 2 - 100);
 
-    ctx.font = '36px sans-serif';
-    const minutes = Math.floor(finalTime / 60);
-    const seconds = (finalTime % 60).toFixed(2);
-    ctx.fillText(`Tiempo: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(5, '0')}`, canvas.width / 2, canvas.height / 2);
-    ctx.fillText(`Fallos: ${finalMisses}`, canvas.width / 2, canvas.height / 2 + 50);
+    ctx.font = '36px sans-serif';
+    const minutes = Math.floor(finalTime / 60);
+    const seconds = (finalTime % 60).toFixed(2);
+    ctx.fillText(`Tiempo: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(5, '0')}`, canvas.width / 2, canvas.height / 2);
+    ctx.fillText(`Fallos: ${finalMisses}`, canvas.width / 2, canvas.height / 2 + 50);
 
-    // Dibuja el botón "Jugar de nuevo"
-    ctx.fillStyle = '#007BFF';
-    const buttonWidth = 250;
-    const buttonHeight = 60;
-    const buttonX = canvas.width / 2 - buttonWidth / 2;
-    const buttonY = canvas.height / 2 + 100;
-    ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    // Dibuja el botón "Jugar de nuevo"
+    ctx.fillStyle = '#007BFF';
+    const buttonWidth = 250;
+    const buttonHeight = 60;
+    const buttonX = canvas.width / 2 - buttonWidth / 2;
+    const buttonY = canvas.height / 2 + 100;
+    ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
 
-    ctx.fillStyle = 'white';
-    ctx.font = '24px sans-serif';
-    ctx.fillText('JUGAR DE NUEVO', canvas.width / 2, buttonY + buttonHeight / 2 + 8);
+    ctx.fillStyle = 'white';
+    ctx.font = '24px sans-serif';
+    ctx.fillText('JUGAR DE NUEVO', canvas.width / 2, buttonY + buttonHeight / 2 + 8);
 
-    // Guarda las coordenadas del botón para el clic
-    canvas.playAgainButton = { x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight };
+    // Guarda las coordenadas del botón para el clic
+    canvas.playAgainButton = { x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight };
 }
 
 // Función para dibujar el cronómetro en tiempo real
 function drawTimer() {
-    const currentTime = Date.now();
-    const elapsedTime = (currentTime - startTime) / 1000;
-    const minutes = Math.floor(elapsedTime / 60);
-    const seconds = (elapsedTime % 60).toFixed(2);
-    
-    ctx.fillStyle = 'white';
-    ctx.font = '24px sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(5, '0')}`, canvas.width - 20, 30);
+    const currentTime = Date.now();
+    const elapsedTime = (currentTime - startTime) / 1000;
+    const minutes = Math.floor(elapsedTime / 60);
+    const seconds = (elapsedTime % 60).toFixed(2);
+    
+    ctx.fillStyle = 'white';
+    ctx.font = '24px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(5, '0')}`, canvas.width - 20, 30);
 }
 
 // Función principal de dibujo y animación
 function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    if (gameState === 'playing') {
-        applyShake();
-        drawTarget();
-        updateParticles();
-        drawParticles();
-        drawTimer();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    if (gameState === 'playing') {
+        applyShake();
+        drawTarget();
+        updateParticles();
+        drawParticles();
+        drawTimer();
+        
+        ctx.fillStyle = 'white';
+        ctx.font = '24px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Clics: ${hits + misses} / ${totalClicksNeeded}`, canvas.width / 2, 30);
+    } else if (gameState === 'results') {
+        drawResultsOnCanvas();
+    }
 
-        // Lógica de auto-apuntado (el círculo blanco)
-        if (autoAimEnabled && target) {
-            ctx.beginPath();
-            ctx.arc(target.x, target.y, target.radius + 10, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-        }
-        
-        ctx.fillStyle = 'white';
-        ctx.font = '24px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`Clics: ${hits + misses} / ${totalClicksNeeded}`, canvas.width / 2, 30);
-    } else if (gameState === 'results') {
-        drawResultsOnCanvas();
-    }
-
-    if (shakeDuration <= 0) {
-        ctx.restore();
-    }
-    
-    requestAnimationFrame(animate);
+    if (shakeDuration <= 0) {
+        ctx.restore();
+    }
+    
+    requestAnimationFrame(animate);
 }
 
 // --- LÓGICA DEL JUEGO Y EVENTOS ---
 
 // Iniciar el juego
 function startGame() {
-    gameState = 'playing';
-    menuScreen.style.display = 'none';
-    canvas.style.display = 'block';
-    
-    score = 0;
-    hits = 0;
-    misses = 0;
-    startTime = Date.now();
-    target = createTarget(); 
-    
-    menuMusic.pause();
-    backgroundMusic.currentTime = 0;
-    backgroundMusic.play();
-}
-
-// Función para alternar el estado de auto-apuntado y actualizar el botón
-function toggleAutoAim() {
-    autoAimEnabled = !autoAimEnabled;
-    autoAimButton.style.backgroundColor = autoAimEnabled ? '#00c853' : '#f7a303';
-    autoAimButton.querySelector('h2').innerText = autoAimEnabled ? 'AUTO APUNTADO: ON' : 'AUTO APUNTADO';
+    gameState = 'playing';
+    menuScreen.style.display = 'none';
+    canvas.style.display = 'block';
+    
+    score = 0;
+    hits = 0;
+    misses = 0;
+    startTime = Date.now();
+    target = createTarget(); 
+    
+    menuMusic.pause();
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play();
 }
 
 // Manejar los clics del mouse
 canvas.addEventListener('click', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const mouseX = (event.clientX - rect.left) * scaleX;
-    const mouseY = (event.clientY - rect.top) * scaleY;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const mouseX = (event.clientX - rect.left) * scaleX;
+    const mouseY = (event.clientY - rect.top) * scaleY;
 
-    if (gameState === 'playing') {
-        if (!target) return;
-        
-        const distance = Math.sqrt(Math.pow(mouseX - target.x, 2) + Math.pow(mouseY - target.y, 2));
+    if (gameState === 'playing') {
+        if (!target) return;
+        
+        const distance = Math.sqrt(Math.pow(mouseX - target.x, 2) + Math.pow(mouseY - target.y, 2));
 
-        if (distance < target.radius) {
-            score++;
-            hits++;
-            createParticles(target.x, target.y);
-            hitSound.currentTime = 0;
-            hitSound.play();
-            target = createTarget();
-        } else {
-            misses++;
-            startShake(150);
-        }
-        
-        if (hits + misses >= totalClicksNeeded) {
-            endGame();
-        }
-    } else if (gameState === 'results') {
-        // Lógica para el botón "Jugar de nuevo" en el canvas
-        const button = canvas.playAgainButton;
-        if (mouseX > button.x && mouseX < button.x + button.width &&
-            mouseY > button.y && mouseY < button.y + button.height) {
-            startGame();
-        }
-    }
+        if (distance < target.radius) {
+            score++;
+            hits++;
+            createParticles(target.x, target.y);
+            hitSound.currentTime = 0;
+            hitSound.play();
+            target = createTarget();
+        } else {
+            misses++;
+            startShake(150);
+        }
+        
+        if (hits + misses >= totalClicksNeeded) {
+            endGame();
+        }
+    } else if (gameState === 'results') {
+        // Lógica para el botón "Jugar de nuevo" en el canvas
+        const button = canvas.playAgainButton;
+        if (mouseX > button.x && mouseX < button.x + button.width &&
+            mouseY > button.y && mouseY < button.y + button.height) {
+            startGame();
+        }
+    }
 });
 
 // Manejar el control de volumen
 volumeSlider.addEventListener('input', (event) => {
-    backgroundMusic.volume = event.target.value;
-    menuMusic.volume = event.target.value;
+    backgroundMusic.volume = event.target.value;
+    menuMusic.volume = event.target.value;
 });
 
-// Event listener para el botón "Auto Apuntado"
-autoAimButton.addEventListener('click', toggleAutoAim);
-
-// Event listener para el botón "Jugar"
-startButton.addEventListener('click', () => {
-    // La música del menú se reproduce con el primer clic del usuario.
-    menuMusic.play();
-    startGame();
-});
-
-// NUEVO: Event listener para la hotkey (tecla 'T')
-document.addEventListener('keydown', (event) => {
-    if (event.key.toLowerCase() === 't') {
-        toggleAutoAim();
-    }
-});
+// Manejar los clics en los botones del menú
+startButton.addEventListener('click', startGame);
 
 // 4. --- INICIO DEL JUEGO ---
 // Iniciar el bucle de animación y el ajuste de tamaño
 resizeCanvas();
 animate();
 
-// Al cargar la página, se intenta iniciar la música del menú con la primera interacción del usuario.
-// Esto funciona como un plan de respaldo para que la música se reproduzca.
-document.addEventListener('click', () => {
-    if (!musicStarted) {
-        menuMusic.play();
-        musicStarted = true;
-    }
-}, { once: true });
+// Inicia la música del menú automáticamente
+menuMusic.play();
